@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import time
 import wave
 from io import BytesIO
@@ -22,16 +21,6 @@ def calculate_ph(volume_naoh, initial_volume_vinegar, initial_conc_vinegar=0.8):
         return -np.log10(h_conc)
     else:
         return 7.0
-
-
-def generate_color(ph):
-    """pH에 따른 색상 생성"""
-    if ph < 7:
-        intensity = (7 - ph) / 7
-        return f'rgb(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))})'
-    else:
-        intensity = (ph - 7) / 7
-        return f'rgb({int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 255)'
 
 
 def generate_tone(frequency, duration=0.1, sample_rate=44100):
@@ -55,7 +44,17 @@ def generate_tone(frequency, duration=0.1, sample_rate=44100):
 def play_sound(frequency):
     """Play sound using Streamlit's st.audio."""
     tone = generate_tone(frequency)
-    st.audio(tone, format='audio/wav', start_time=0)
+    audio_data = tone.read()
+    
+    # Insert HTML with JavaScript to autoplay audio
+    audio_html = f"""
+    <audio id="audio" autoplay>
+        <source src="data:audio/wav;base64,{audio_data}" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+    """
+    
+    st.markdown(audio_html, unsafe_allow_html=True)
 
 
 def main():
