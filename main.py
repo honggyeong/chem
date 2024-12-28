@@ -6,14 +6,11 @@ import time
 import wave
 from io import BytesIO
 
+
 def calculate_ph(volume_naoh, initial_volume_vinegar, initial_conc_vinegar=0.8):
     """pH 계산 함수"""
-    # 초기 아세트산의 몰 수
     moles_acid = initial_volume_vinegar * initial_conc_vinegar
-
-    # NaOH의 몰 수 (0.1M NaOH 기준)
     moles_base = volume_naoh * 0.1
-
     remaining_acid = moles_acid - moles_base
 
     if remaining_acid > 0:
@@ -38,12 +35,12 @@ def generate_color(ph):
 
 
 def generate_tone(frequency, duration=0.1, sample_rate=44100):
+    """Generate a tone in WAV format for playback with Streamlit."""
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
     tone = np.sin(2 * np.pi * frequency * t)
-
     tone = (tone * 16000).astype(np.int16)
 
-    # WAV 파일로 변환
+    # Convert to WAV format
     buffer = BytesIO()
     with wave.open(buffer, 'wb') as wav_file:
         wav_file.setnchannels(1)
@@ -56,8 +53,9 @@ def generate_tone(frequency, duration=0.1, sample_rate=44100):
 
 
 def play_sound(frequency):
+    """Play sound using Streamlit's st.audio."""
     tone = generate_tone(frequency)
-    st.audio(tone, format="audio/wav")
+    st.audio(tone, format='audio/wav')
 
 
 def main():
@@ -137,81 +135,9 @@ def main():
             if current_ph > 6.5:
                 st.session_state.has_reached_neutral = True
                 st.session_state.is_running = False  # 실험 종료
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
+                play_sound(500)  # 삐비빅 소리 (500Hz)
                 time.sleep(0.7)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.7)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.7)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.7)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.08)
-                play_sound(500)
-                # 삐비빅 소리 (500Hz)
-                time.sleep(0.7)
+                play_sound(500)  # 삐비빅 소리 (500Hz)
                 st.write("중화점 근처에 도달했습니다! 코크가 자동으로 닫혔습니다.")
 
             # pH 상태에 따른 소리
