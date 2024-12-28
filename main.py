@@ -1,19 +1,16 @@
 import streamlit as st
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import time
-import wave
-from io import BytesIO
-
 
 def calculate_ph(volume_naoh, initial_volume_vinegar, initial_conc_vinegar=0.8):
-    """pH 계산 함수"""
     moles_acid = initial_volume_vinegar * initial_conc_vinegar
     moles_base = volume_naoh * 0.1
     remaining_acid = moles_acid - moles_base
 
     if remaining_acid > 0:
-        h_conc = np.sqrt(remaining_acid * 1.8e-5)  # Ka of acetic acid
+        h_conc = np.sqrt(remaining_acid * 1.8e-5)
         return -np.log10(h_conc)
     elif remaining_acid < 0:
         oh_conc = -remaining_acid
@@ -21,41 +18,6 @@ def calculate_ph(volume_naoh, initial_volume_vinegar, initial_conc_vinegar=0.8):
         return -np.log10(h_conc)
     else:
         return 7.0
-
-
-def generate_tone(frequency, duration=0.1, sample_rate=44100):
-    """Generate a tone in WAV format for playback with Streamlit."""
-    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-    tone = np.sin(2 * np.pi * frequency * t)
-    tone = (tone * 16000).astype(np.int16)
-
-    # Convert to WAV format
-    buffer = BytesIO()
-    with wave.open(buffer, 'wb') as wav_file:
-        wav_file.setnchannels(1)
-        wav_file.setsampwidth(2)
-        wav_file.setframerate(sample_rate)
-        wav_file.writeframes(tone.tobytes())
-
-    buffer.seek(0)
-    return buffer
-
-
-def play_sound(frequency):
-    """Play sound using Streamlit's st.audio."""
-    tone = generate_tone(frequency)
-    audio_data = tone.read()
-    
-    # Insert HTML with JavaScript to autoplay audio
-    audio_html = f"""
-    <audio id="audio" autoplay>
-        <source src="data:audio/wav;base64,{audio_data}" type="audio/wav">
-        Your browser does not support the audio element.
-    </audio>
-    """
-    
-    st.markdown(audio_html, unsafe_allow_html=True)
-
 
 def main():
     st.title("가상 적정 실험 시뮬레이터")
@@ -118,7 +80,7 @@ def main():
             ax.set_xlabel('NaOH 부피 (mL)')
             ax.set_ylabel('pH')
             ax.grid(True)
-            chart_placeholder.pyplot(fig)
+            chart_placeholder.pyplot(fig)  # Ensure this is placed to display the graph
             plt.close()
 
             status_html = f"""
@@ -134,21 +96,8 @@ def main():
             if current_ph > 6.5:
                 st.session_state.has_reached_neutral = True
                 st.session_state.is_running = False  # 실험 종료
-                play_sound(500)  # 삐비빅 소리 (500Hz)
-                time.sleep(0.7)
-                play_sound(500)  # 삐비빅 소리 (500Hz)
                 st.write("중화점 근처에 도달했습니다! 코크가 자동으로 닫혔습니다.")
-
-            # pH 상태에 따른 소리
-            if current_ph < 7:
-                play_sound(440)  # 낮은 음 (산성)
-            elif current_ph > 7:
-                play_sound(880)  # 높은 음 (염기성)
-            else:
-                play_sound(660)  # 중간 음 (중성)
-
             time.sleep(0.1)
-
 
 if __name__ == "__main__":
     main()
