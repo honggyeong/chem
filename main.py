@@ -55,7 +55,7 @@ def generate_tone(frequency, duration=0.1, sample_rate=44100):
 def play_sound(frequency):
     """Play sound using Streamlit's st.audio."""
     tone = generate_tone(frequency)
-    st.audio(tone, format='audio/wav')
+    st.audio(tone, format='audio/wav', start_time=0)
 
 
 def main():
